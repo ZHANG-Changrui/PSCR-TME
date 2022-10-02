@@ -26,20 +26,24 @@ public:
         }
     }
     V* get(const K& key){
-        //size_t h=hash<K>()(key);
-        int index=key%(this->init+1);
+        size_t index=std::hash<K>()(key);
+        index=index%this->init;
         forward_list<Entry> l=this->buckets.at(index);
+        V *r=new V;
         for(auto i:l){
             if(i.key==key){
-                V *r=new V;
+
                 *r=i.value;
                 return r;
             }
         }
-        return nullptr;
+        *r="none";
+        return r;
     }
     void put(const K k,const V v){
-
+        size_t index=hash<K>()(k);
+        index%=this->init;
+        this->buckets.at(index).push_front(Entry(k,v));
     }
 };
 
