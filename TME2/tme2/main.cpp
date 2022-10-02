@@ -1,9 +1,47 @@
 #include <iostream>
+#include <forward_list>
 #include <fstream>
 #include <regex>
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
+
+
+template<typename K,typename V>
+class HashMap{
+public:
+    class Entry{
+    public:
+        const K key;
+        const V value;
+        Entry(const K k,const V v):key(k),value(v){}
+    };
+    typedef vector<forward_list<Entry>> buckets_t;
+    buckets_t buckets;
+    size_t init;
+    HashMap(size_t init=100):init(init==100){
+        buckets.reserve(init);
+        for(size_t i=0;i<init;++i){
+            buckets.push_back(forward_list<Entry>());
+        }
+    }
+    V* get(const K& key){
+        //size_t h=hash<K>()(key);
+        int index=key%(this->init+1);
+        forward_list<Entry> l=this->buckets.at(index);
+        for(auto i:l){
+            if(i.key==key){
+                V *r=new V;
+                *r=i.value;
+                return r;
+            }
+        }
+        return nullptr;
+    }
+    void put(const K k,const V v){
+
+    }
+};
 
 bool cond(pair<string,int> p){
     return p.first=="war";
@@ -84,6 +122,10 @@ int main () {
     //cout << "taille mots: " <<v.size()<<endl;
 
     affiche3Occur(v);
+
+    HashMap<string,int> h(100);
+
+
     return 0;
 }
 
