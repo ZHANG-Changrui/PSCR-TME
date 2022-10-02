@@ -15,11 +15,14 @@ public:
         const K key;
         const V value;
         Entry(const K k,const V v):key(k),value(v){}
+        void toString(){
+            cout<<"key: "<<key<<"value: "<<value<<endl;
+        }
     };
     typedef vector<forward_list<Entry>> buckets_t;
     buckets_t buckets;
     size_t init;
-    HashMap(size_t init=100):init(init==100){
+    HashMap(size_t init=100):init(100){
         buckets.reserve(init);
         for(size_t i=0;i<init;++i){
             buckets.push_back(forward_list<Entry>());
@@ -41,11 +44,29 @@ public:
         return r;
     }
     void put(const K k,const V v){
-        size_t index=hash<K>()(k);
-        index%=this->init;
+        int index=hash<K>()(k);
+        cout<<"init: "<<init<<endl;
+        cout<<"first index : "<<index<<endl;
+        index=index%init;
+        cout<<"index: "<<index<<endl;
+        this->buckets.at(index).remove_if([k] (Entry e){
+            return e.key==k;
+        });
         this->buckets.at(index).push_front(Entry(k,v));
     }
 };
+void printMap(HashMap<int,string> m){
+    cout<<"-----affiche---------"<<endl;
+    int line=0;
+    for(auto &i:m.buckets){
+        cout<<line++<<" size:"<<distance(i.begin(),i.end())<<" - ";
+        for(auto &j:i){
+            cout<<j.key<<":"<<j.value<<" | ";
+        }
+        cout<<endl;
+    }
+    cout<<"----end affiche-------"<<endl;
+}
 
 bool cond(pair<string,int> p){
     return p.first=="war";
