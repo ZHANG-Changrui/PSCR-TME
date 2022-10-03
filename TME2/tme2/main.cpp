@@ -128,12 +128,12 @@ int main () {
 */
 //question 6
 
-        if(word=="toto"||word=="war"||word=="peace"){
+        //if(word=="toto"||word=="war"||word=="peace"){
             //cout<<word<<": "<<*map.get(word)<<endl;
             //if(word=="war")
               //  cout<<*map.get(word)<<endl;
             map.put(word,(*map.get(word))+1);
-        }
+        //}
         /*
 		if (nombre_lu % 100 == 0)
 			// on affiche un mot "propre" sur 100
