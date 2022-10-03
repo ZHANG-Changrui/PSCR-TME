@@ -5,8 +5,8 @@
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
-
-
+//TODO ligne 134: affiche = correct, n'affiche pas = valeur incorrect
+//question 5
 template<typename K,typename V>
 class HashMap{
 public:
@@ -29,33 +29,27 @@ public:
         }
     }
     V* get(const K& key){
-        size_t index=std::hash<K>()(key);
+        size_t index=hash<K>()(key);
         index=index%this->init;
         forward_list<Entry> l=this->buckets.at(index);
-        V *r=new V;
-        for(auto i:l){
+        for(auto& i:l){
             if(i.key==key){
-
-                *r=i.value;
-                return r;
+               // cout<<"val "<<i.value<<endl;
+                return new V(i.value);
             }
         }
-        *r="none";
-        return r;
+        return new V;
     }
     void put(const K k,const V v){
-        int index=hash<K>()(k);
-        cout<<"init: "<<init<<endl;
-        cout<<"first index : "<<index<<endl;
-        index=index%init;
-        cout<<"index: "<<index<<endl;
+        size_t index=hash<K>()(k);
+        index=index%this->init;
         this->buckets.at(index).remove_if([k] (Entry e){
             return e.key==k;
         });
         this->buckets.at(index).push_front(Entry(k,v));
     }
 };
-void printMap(HashMap<int,string> m){
+void printMap(HashMap<string,int> m){
     cout<<"-----affiche---------"<<endl;
     int line=0;
     for(auto &i:m.buckets){
@@ -79,6 +73,8 @@ void affiche3Occur(vector<pair<string,int>> v){
 }
 
 int main () {
+
+
 	ifstream input = ifstream("WarAndPeace.txt");
 
 	auto start = steady_clock::now();
@@ -89,21 +85,25 @@ int main () {
 	string word;
 	// une regex qui reconnait les caractères anormaux (négation des lettres)
 	regex re( R"([^a-zA-Z])");
-    vector<pair<string,int>> v;
-
+//TODO
+    //vector<pair<string,int>> v;
+    HashMap<string,int> map;
 
 	while (input >> word) {
 		// élimine la ponctuation et les caractères spéciaux
 		word = regex_replace ( word, re, "");
         // passe en lowercase
         transform(word.begin(),word.end(),word.begin(),::tolower);
-/* exo2
+		// word est maintenant "tout propre"
+
+
+
+//TODO
+        /* exo2
         if(std::find(v.begin(),v.end(),word)==v.end()){
             v.push_back();
         }
-*/
-
-
+        Question 3
         if(word=="toto"||word=="war"||word=="peace"){
             if(v.empty()){
                 pair<string,int> tmp(word,1);
@@ -125,18 +125,22 @@ int main () {
             }
         }
 
+*/
+//question 6
 
-
-
-
-		// word est maintenant "tout propre"
+        if(word=="toto"||word=="war"||word=="peace"){
+            //cout<<word<<": "<<*map.get(word)<<endl;
+            //if(word=="war")
+              //  cout<<*map.get(word)<<endl;
+            map.put(word,(*map.get(word))+1);
+        }
         /*
 		if (nombre_lu % 100 == 0)
 			// on affiche un mot "propre" sur 100
 			cout << nombre_lu << ": "<< word << endl;*/
 		nombre_lu++;
 	}
-    input.close();
+
 
 	cout << "Finished Parsing War and Peace" << endl;
 	auto end = steady_clock::now();
@@ -145,13 +149,14 @@ int main () {
               << "ms.\n";
     cout << "Found a total of " << nombre_lu << " words." << endl;
     //cout << "taille mots: " <<v.size()<<endl;
-
-    affiche3Occur(v);
-
-    HashMap<string,int> h(100);
-
-
-    return 0;
+    //affiche3Occur(v);
+    int *toto=map.get("toto");
+    int *war=map.get("war");
+    cout<<"occurence toto: "<<*toto<<endl;
+    cout<<"occurence war: "<<*war<<endl;
+    cout<<"occurence peace: "<<*map.get("peace")<<endl;
+    //printMap(map);
+    input.close();
 }
 
 
