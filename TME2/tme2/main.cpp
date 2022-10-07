@@ -28,17 +28,18 @@ public:
             buckets.push_back(forward_list<Entry>());
         }
     }
-    V* get(const K& key){
-        size_t index=hash<K>()(key);
+    V* get(const K& k){
+        size_t index=hash<K>()(k);
         index=index%this->init;
-        forward_list<Entry> l=this->buckets.at(index);
+        forward_list<Entry> l=this->buckets.at((int)index);
         for(auto& i:l){
-            if(i.key==key){
+            if(i.key==k){
+                //cout<<"v: "<<i.value<<endl;
                // cout<<"val "<<i.value<<endl;
                 return new V(i.value);
             }
         }
-        return new V;
+        return new V(0);
     }
     void put(const K k,const V v){
         size_t index=hash<K>()(k);
@@ -61,7 +62,6 @@ void printMap(HashMap<string,int> m){
     }
     cout<<"----end affiche-------"<<endl;
 }
-
 bool cond(pair<string,int> p){
     return p.first=="war";
 }
@@ -71,92 +71,121 @@ void affiche3Occur(vector<pair<string,int>> v){
         cout<<"|"<<i.first<<"|:"<<i.second<<endl;
     }
 }
-
+template<typename iterator>
+size_t count(iterator begin,iterator end){
+    //size_t size=end-begin;
+    size_t cmp=0;
+    for(auto it=begin,_end=end;it!=_end;it++){
+        cmp++;
+    }
+    return cmp;
+}
+template<typename iterator,typename T>
+size_t count_if_equal(iterator begin,iterator end,const T& val){
+    size_t cmp=0;
+    if(count(begin,end)==val){
+        cmp++;
+    }
+    return cmp;
+}
 int main () {
-
-
-	ifstream input = ifstream("WarAndPeace.txt");
-
-	auto start = steady_clock::now();
-	cout << "Parsing War and Peace" << endl;
-
-	size_t nombre_lu = 0;
-	// prochain mot lu
-	string word;
-	// une regex qui reconnait les caractères anormaux (négation des lettres)
-	regex re( R"([^a-zA-Z])");
+    cout<<"lol"<<endl;
+    {
+        ifstream input = ifstream("WarAndPeace.txt");
+        //auto start = steady_clock::now();
+        cout << "Parsing War and Peace" << endl;
+        size_t nombre_lu = 0;
+        // prochain mot lu
+        string word;
+        // une regex qui reconnait les caractères anormaux (négation des lettres)
+        regex re(R"([^a-zA-Z])");
 //TODO
-    //vector<pair<string,int>> v;
-    HashMap<string,int> map;
-
-	while (input >> word) {
-		// élimine la ponctuation et les caractères spéciaux
-		word = regex_replace ( word, re, "");
-        // passe en lowercase
-        transform(word.begin(),word.end(),word.begin(),::tolower);
-		// word est maintenant "tout propre"
-
-
-
+        //vector<pair<string,int>> v;
+        HashMap<string, int> map;
+        while (input >> word) {
+            // élimine la ponctuation et les caractères spéciaux
+            word = regex_replace(word, re, "");
+            // passe en lowercase
+            transform(word.begin(), word.end(), word.begin(), ::tolower);
+            // word est maintenant "tout propre"
 //TODO
-        /* exo2
-        if(std::find(v.begin(),v.end(),word)==v.end()){
-            v.push_back();
-        }
-        Question 3
-        if(word=="toto"||word=="war"||word=="peace"){
-            if(v.empty()){
-                pair<string,int> tmp(word,1);
-                v.push_back(tmp);
-            }else{
-                const size_t sz=v.size();
-                bool t= false;
-                for(size_t i=0;i<sz;i++){
-                    if(v.at(i).first==word){
-                        t= true;
-                        pair<string,int> tmp(word,v.at(i).second+1);
-                        v.at(i)=tmp;
-                    }
-                }
-                if(!t){
+            /* exo2
+            if(std::find(v.begin(),v.end(),word)==v.end()){
+                v.push_back();
+            }
+            Question 3
+            if(word=="toto"||word=="war"||word=="peace"){
+                if(v.empty()){
                     pair<string,int> tmp(word,1);
                     v.push_back(tmp);
+                }else{
+                    const size_t sz=v.size();
+                    bool t= false;
+                    for(size_t i=0;i<sz;i++){
+                        if(v.at(i).first==word){
+                            t= true;
+                            pair<string,int> tmp(word,v.at(i).second+1);
+                            v.at(i)=tmp;
+                        }
+                    }
+                    if(!t){
+                        pair<string,int> tmp(word,1);
+                        v.push_back(tmp);
+                    }
                 }
             }
-        }
-
-*/
+    */
 //question 6
 
-        //if(word=="toto"||word=="war"||word=="peace"){
-            //cout<<word<<": "<<*map.get(word)<<endl;
-            //if(word=="war")
-              //  cout<<*map.get(word)<<endl;
-            map.put(word,(*map.get(word))+1);
+           // if (word == "toto" || word == "war" || word == "peace") {
+            int occr=*map.get(word)+1;
+            //cout<<"mot: "<<word<<" taille: "<<occr<<endl;
+            map.put(word,occr);
+            //cout << word << ": " << *map.get(word) << endl;
+
+
+
+             //}
+            /*
+            if (nombre_lu % 100 == 0)
+                // on affiche un mot "propre" sur 100
+                cout << nombre_lu << ": "<< word << endl;*/
+            nombre_lu++;
+        }
+        std::vector<pair<string,int>> v;
+        for(auto i:map.buckets){
+            for(auto j:i){
+                v.push_back(make_pair(j.key,j.value));
+            }
+        }
+/*
+        cout << "Finished Parsing War and Peace" << endl;
+        auto end = steady_clock::now();
+        cout << "Parsing took "
+             << duration_cast<milliseconds>(end - start).count()
+             << "ms.\n";
+        cout << "Found a total of " << nombre_lu << " words." << endl;
+        //cout << "taille mots: " <<v.size()<<endl;
+        //affiche3Occur(v);
+        int *toto = map.get("toto");
+        int *war = map.get("war");
+        cout << "occurence toto: " << *toto << endl;
+        cout << "occurence war: " << *war << endl;
+        cout << "occurence peace: " << *map.get("peace") << endl;
+        //printMap(map);
+        input.close();*/
+        //int cmp=0;
+        //for(auto i:map.buckets){
+        //    cmp+=count(i.begin(),i.end());
         //}
-        /*
-		if (nombre_lu % 100 == 0)
-			// on affiche un mot "propre" sur 100
-			cout << nombre_lu << ": "<< word << endl;*/
-		nombre_lu++;
-	}
+        //cout<<"voici la taille: "<<count(map.buckets.begin(),map.buckets.end())<<"et cmp: "<<cmp<<endl;
+        cout<<"taille v: "<<v.size()<<endl;
+        std::sort(v.begin(),v.end(),[](pair<string,int> p1,pair<string,int> p2){
+            return p1.second>p2.second;
+        });
+        for(auto i=v.begin();i< v.begin()+10;i++){
+            cout<<"first: "<<i->first<<" seconde: "<<i->second<<endl;
+        }
 
-
-	cout << "Finished Parsing War and Peace" << endl;
-	auto end = steady_clock::now();
-    cout << "Parsing took "
-              << duration_cast<milliseconds>(end - start).count()
-              << "ms.\n";
-    cout << "Found a total of " << nombre_lu << " words." << endl;
-    //cout << "taille mots: " <<v.size()<<endl;
-    //affiche3Occur(v);
-    int *toto=map.get("toto");
-    int *war=map.get("war");
-    cout<<"occurence toto: "<<*toto<<endl;
-    cout<<"occurence war: "<<*war<<endl;
-    cout<<"occurence peace: "<<*map.get("peace")<<endl;
-    //printMap(map);
-    input.close();
+    }
 }
-
-
