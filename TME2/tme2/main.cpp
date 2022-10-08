@@ -8,6 +8,7 @@ using namespace std::chrono;
 //TODO ligne 134: affiche = correct, n'affiche pas = valeur incorrect
 //question 5
 template<typename K,typename V>
+
 class HashMap{
 public:
     class Entry{
@@ -19,10 +20,34 @@ public:
             cout<<"key: "<<key<<"value: "<<value<<endl;
         }
     };
+    class iterator{
+    public:
+        typedef vector<forward_list<Entry>> buckets_t;
+        typedef forward_list<Entry> iter_t;
+        buckets_t *buckets;
+        int index;
+        iterator(buckets_t &b):buckets(&b),index(0){}
+
+        //It(buckets_t b):buckets(b){};
+        iter_t* begin(){
+            return &buckets->at(0);
+        }
+        iter_t* end(){
+            return &(buckets->at(buckets->size()-1));
+        }
+        iter_t* operator()(){
+            return &(buckets->at(index));
+        }
+        iter_t* operator++(){
+            ++index;
+            return &(buckets->at(index));
+        }
+    };
     typedef vector<forward_list<Entry>> buckets_t;
     buckets_t buckets;
     size_t init;
-    HashMap(size_t init=100):init(100){
+    iterator iterator;
+    HashMap(size_t init=100):init(100), iterator(buckets){
         buckets.reserve(init);
         for(size_t i=0;i<init;++i){
             buckets.push_back(forward_list<Entry>());
@@ -49,6 +74,8 @@ public:
         });
         this->buckets.at(index).push_front(Entry(k,v));
     }
+
+
 };
 void printMap(HashMap<string,int> m){
     cout<<"-----affiche---------"<<endl;
@@ -100,8 +127,12 @@ int main () {
         // une regex qui reconnait les caractères anormaux (négation des lettres)
         regex re(R"([^a-zA-Z])");
 //TODO
+        cout<<"-------------------1----------"<<endl;
+
         //vector<pair<string,int>> v;
         HashMap<string, int> map;
+        cout<<"-----------------------------"<<endl;
+
         while (input >> word) {
             // élimine la ponctuation et les caractères spéciaux
             word = regex_replace(word, re, "");
@@ -152,6 +183,7 @@ int main () {
                 cout << nombre_lu << ": "<< word << endl;*/
             nombre_lu++;
         }
+
         std::vector<pair<string,int>> v;
         for(auto i:map.buckets){
             for(auto j:i){
@@ -187,5 +219,13 @@ int main () {
             cout<<"first: "<<i->first<<" seconde: "<<i->second<<endl;
         }
 
+
+        auto it = map.iterator;
+        for(auto i=it.begin(),_end=it.end();i!=_end;i++){
+            for(auto j=i->begin(),__end=i->end();j!=__end;j++){
+                cout<<"key: "<<j->key<<" value: "<<j->value<<endl;
+            }
+        }
+        //cout<<it.buckets->at(0).begin()->key<<endl;
     }
 }
