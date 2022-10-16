@@ -5,21 +5,20 @@
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
-//TODO ligne 134: affiche = correct, n'affiche pas = valeur incorrect
 //question 5
 template<typename K,typename V>
-
 class HashMap{
 public:
     class Entry{
     public:
         const K key;
-        const V value;
+        V value;
         Entry(const K k,const V v):key(k),value(v){}
         void toString(){
             cout<<"key: "<<key<<"value: "<<value<<endl;
         }
     };
+        /*
     class iterator{
     public:
         typedef vector<forward_list<Entry>> buckets_t;
@@ -43,15 +42,23 @@ public:
             return &(buckets->at(index));
         }
     };
+     */
     typedef vector<forward_list<Entry>> buckets_t;
+    typedef forward_list<Entry> bucket_in;
     buckets_t buckets;
     size_t init;
-    iterator iterator;
-    HashMap(size_t init=100):init(100), iterator(buckets){
+    size_t nbrElm;
+    int index_buckets=0;
+    //buckets_t &iter=buckets;
+    //bucket_in *vit;
+    //entry_iterator lit;
+    HashMap(size_t init=100):init(100){
         buckets.reserve(init);
         for(size_t i=0;i<init;++i){
             buckets.push_back(forward_list<Entry>());
         }
+        //vit=&iter.at(index_buckets);
+        //lit=vit->begin();
     }
     V* get(const K& k){
         size_t index=hash<K>()(k);
@@ -66,6 +73,7 @@ public:
         }
         return new V(0);
     }
+    /*
     void put(const K k,const V v){
         size_t index=hash<K>()(k);
         index=index%this->init;
@@ -73,9 +81,67 @@ public:
             return e.key==k;
         });
         this->buckets.at(index).push_front(Entry(k,v));
+    }*/
+    bool put(const K k,const V v){
+        size_t index=hash<K>()(k) % this->init;
+        for(auto &e:buckets.at(index)){
+            if(e.key==k){
+                e.value=v;
+                return true;
+            }
+        }
+        buckets.at(index).push_front(Entry(k,v));
+        nbrElm++;
+        return false;
     }
+    class iterator{
+    public:
+        typename buckets_t::iterator end;
+        typename buckets_t::iterator vit;
+        typename bucket_in::iterator lit;
+        iterator(const typename buckets_t::iterator &end,const typename buckets_t::iterator &vit,const typename bucket_in::iterator &lit):end(end),vit(vit),lit(lit){
+        }
+        iterator& operator++(){
+            ++lit;
+            if(lit==vit->end()){
+                ++vit;
 
-
+                while(vit->empty()){
+                    ++vit;
+                }
+                if(vit!=end){
+                    lit=vit->begin();
+                }
+            }
+            return *this;
+        }
+        Entry& operator*(){
+            return *lit;
+        }
+        bool operator!=(iterator i){
+            return lit != i.lit|| vit!=i.vit;
+        }
+    };
+   /* iterator begin() {
+        typename buckets_t::iterator vit = buckets.begin();
+        while (vit->empty() && vit != buckets.end()) {
+            ++vit;
+        }
+        if (vit != buckets.end()) {
+            return iterator(buckets.end(),vit,vit->begin());
+        } else {
+            return end();
+        }
+    }*/
+    iterator begin(){
+        typename buckets_t::iterator vit=buckets.begin();
+        return iterator(buckets.end(),vit,vit->begin());
+    }
+    iterator end(){
+        typename buckets_t::iterator vit=buckets.end();
+        //cout<<"voici end: lit"<<e.value<<endl;
+        return iterator(buckets.end(),vit,vit->end());
+    }
 };
 void printMap(HashMap<string,int> m){
     cout<<"-----affiche---------"<<endl;
@@ -116,7 +182,6 @@ size_t count_if_equal(iterator begin,iterator end,const T& val){
     return cmp;
 }
 int main () {
-    cout<<"lol"<<endl;
     {
         ifstream input = ifstream("WarAndPeace.txt");
         //auto start = steady_clock::now();
@@ -171,9 +236,9 @@ int main () {
            // if (word == "toto" || word == "war" || word == "peace") {
             int occr=*map.get(word)+1;
             //cout<<"mot: "<<word<<" taille: "<<occr<<endl;
+            //cout<<occr<<endl;
             map.put(word,occr);
             //cout << word << ": " << *map.get(word) << endl;
-
 
 
              //}
@@ -190,6 +255,7 @@ int main () {
                 v.push_back(make_pair(j.key,j.value));
             }
         }
+
 /*
         cout << "Finished Parsing War and Peace" << endl;
         auto end = steady_clock::now();
@@ -218,14 +284,23 @@ int main () {
         for(auto i=v.begin();i< v.begin()+10;i++){
             cout<<"first: "<<i->first<<" seconde: "<<i->second<<endl;
         }
+        //cout<<"before end"<<endl;
+        //cout<<map.buckets.end()->end()->value<<endl;
+        //auto end=map.end();
+        //cout<<"after end"<<endl;
+        //cout<<(*end).key<<" : "<<(*end).value<<endl;
 
-
+        for(auto it=map.begin();it!=map.end();++it){
+            cout<<"Key: "<<(*it).key<<" valeur: "<<(*it).value<<endl;
+        }
+        /*
         auto it = map.iterator;
         for(auto i=it.begin(),_end=it.end();i!=_end;i++){
             for(auto j=i->begin(),__end=i->end();j!=__end;j++){
                 cout<<"key: "<<j->key<<" value: "<<j->value<<endl;
             }
         }
-        //cout<<it.buckets->at(0).begin()->key<<endl;
+        */
+
     }
 }
