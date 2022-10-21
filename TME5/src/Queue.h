@@ -3,12 +3,15 @@
 
 #include <cstdlib>
 #include <mutex>
+#include <condition_variable>
 
 namespace pr {
 
 // MT safe version of the Queue, non blocking.
 template <typename T>
 class Queue {
+	bool isBlocking=true;
+	std::condition_variable cv;
 	T ** tab;
 	const size_t allocsize;
 	size_t begin;
@@ -33,7 +36,10 @@ public:
 	}
 	T* pop() {
 		std::unique_lock<std::mutex> lg(m);
-		if (empty()) {
+		while (empty()&&isBlocking) {
+			cv.wait(lg);
+		}
+		if(empty()){
 			return nullptr;
 		}
 		auto ret = tab[begin];
@@ -44,12 +50,20 @@ public:
 	}
 	bool push(T* elt) {
 		std::unique_lock<std::mutex> lg(m);
+		while(full()&&isBlocking){
+			cv.wait(lg);
+		}
 		if (full()) {
 			return false;
 		}
 		tab[(begin + sz) % allocsize] = elt;
 		sz++;
 		return true;
+	}
+	void setBlocking(bool block){//TODO
+		std::unique_lock<std::mutex> l(m);
+		isBlocking=block;
+		cv.notify_all();
 	}
 	~Queue() {
 		// ?? lock a priori inutile, ne pas detruire si on travaille encore avec
