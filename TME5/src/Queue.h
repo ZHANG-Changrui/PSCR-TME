@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <mutex>
 #include <condition_variable>
-
+#include <cstring>
 namespace pr {
 
 // MT safe version of the Queue, non blocking.
@@ -30,6 +30,7 @@ public:
 		tab = new T*[size];
 		memset(tab, 0, size * sizeof(T*));
 	}
+	Queue();
 	size_t size() const {
 		std::unique_lock<std::mutex> lg(m);
 		return sz;

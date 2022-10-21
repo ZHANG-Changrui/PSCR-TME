@@ -6,19 +6,25 @@
 #include <thread>
 
 namespace pr {
-
+void poolWorker(Queue<Job> &queue){
+	while(1){
+		Job *j=queue.pop();
+		if(j==nullptr){
+			break;
+		}
+		j->run();
+		delete j;
+	}
+}
 class Pool {
 	Queue<Job> queue;
 	std::vector<std::thread> threads;
 public:
-	Pool(int qsize){
-		queue=Queue<Job>(qsize);
-	}
-
+	Pool(int qsize);
 
 	void start (int nbthread){
 		for(int i=0;i<nbthread;i++){
-			threads.emplace_back(queue.pop());
+			threads.emplace_back(poolWorker,std::ref(queue));
 		}
 	}
 	void submit (Job * job){
@@ -27,20 +33,8 @@ public:
 	void stop(){
 		queue.setBlocking(false);
 	}
-	void poolWorker(Queue<Job> &queue){
-		while(1){
-			Job *j=queue.pop();
-			if(j==nullptr){
-				break;
-			}
-			j->run();
-			delete j;
-		}
-	}
-	~Pool(){
-		delete queue;
-		delete[] threads;
-	}
+
+	~Pool();
 };
 
 }

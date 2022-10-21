@@ -6,10 +6,12 @@
 #include <fstream>
 #include <limits>
 #include <random>
+#include "Pool.h"
+#include "Queue.h"
+#include "Job.h"
 
 using namespace std;
 using namespace pr;
-
 
 void fillScene(Scene & scene, default_random_engine & re) {
 	// Nombre de spheres (rend le probleme plus dur)
@@ -101,6 +103,14 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 // NB : en francais pour le cours, preferez coder en english toujours.
 // pas d'accents pour eviter les soucis d'encodage
 
+
+void Job::run(){
+
+}
+
+
+
+
 int main () {
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -125,6 +135,7 @@ int main () {
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
 
+	pr::Queue<int> q=Queue<int>(12);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
 		for (int  y = 0 ; y < scene.getHeight() ; y++) {
