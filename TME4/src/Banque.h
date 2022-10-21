@@ -2,7 +2,7 @@
 
 #include "Compte.h"
 #include <vector>
-
+#include <iostream>
 namespace pr {
 
 class Banque {
@@ -14,6 +14,13 @@ public :
 	void transfert(size_t deb, size_t cred, unsigned int val) ;
 	size_t size() const ;
 	bool comptabiliser (int attendu) const ;
+    void afficheList(){
+        int cmp=0;
+        for(auto c:comptes){
+            std::cout<<cmp<<" : "<<c.getSolde()<<std::endl;
+            cmp++;
+        }
+    }
 };
 
 }
