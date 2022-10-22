@@ -2,7 +2,7 @@
 #include <time.h>
 using namespace std;
 
-const int NB_THREAD =1000;
+const int NB_THREAD =10000;
 void trans(pr::Banque &b){
         int i=rand()%(b.size());
         int j=rand()%(b.size());
@@ -12,14 +12,7 @@ void trans(pr::Banque &b){
         this_thread::sleep_for(std::chrono::milliseconds(tsleep));
 }
 void comptabiliser(pr::Banque &b,int n){
-    int tsleep=rand()%21000;
-    this_thread::sleep_for(std::chrono::milliseconds(tsleep));
-    int eg=b.comptabiliser(n);
-    if(eg){
-        cout<<"OK cpt"<<endl;
-    }else{
-        cout<<"NON cpt"<<endl;
-    }
+    if(b.comptabiliser(n));
 }
 int main () {
     pr::Banque b(20,100);
@@ -28,10 +21,8 @@ int main () {
 	// TODO : creer des threads qui font ce qui est demandé
 
     for(int i=0;i<NB_THREAD;i++){
-        threads.emplace_back(comptabiliser,std::ref(b),20*100);
         threads.emplace_back(trans,std::ref(b));
-
-
+        threads.emplace_back(comptabiliser,std::ref(b),20*100);
     }
 
 
