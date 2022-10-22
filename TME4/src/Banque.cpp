@@ -7,7 +7,7 @@ using namespace std;
 namespace pr {
 
 void Banque::transfert(size_t deb, size_t cred, unsigned int val) {
-    unique_lock<mutex> uniqueLock(l);
+    l.lock();
     Compte & debiteur = comptes[deb];
 	Compte & crediteur = comptes[cred];
     debiteur.getMutex().lock();
@@ -17,13 +17,14 @@ void Banque::transfert(size_t deb, size_t cred, unsigned int val) {
 	}
     crediteur.getMutex().unlock();
     debiteur.getMutex().unlock();
+    l.unlock();
 }
 size_t Banque::size() const {
 	return comptes.size();
 }
 
 bool Banque::comptabiliser (int attendu) const {
-    unique_lock<mutex> uniqueLock(l);
+    l.lock();
     int bilan = 0;
 	int id = 0;
 	for (const auto & compte : comptes) {
@@ -39,6 +40,7 @@ bool Banque::comptabiliser (int attendu) const {
     for(auto c:comptes){
         c.getMutex().unlock();
     }
+    l.unlock();
 	return bilan == attendu;
 }
 }
