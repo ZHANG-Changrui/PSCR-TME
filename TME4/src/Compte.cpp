@@ -9,7 +9,7 @@ void Compte::crediter (unsigned int val) {
 	solde+=val ;
 }
 bool Compte::debiter (unsigned int val) {
-	//unique_lock<recursive_mutex> g(m);
+    lock_guard<std::recursive_mutex> lockGuard(m);
 	bool doit = solde >= val;
 	if (doit) {
 		solde-=val ;
@@ -17,8 +17,8 @@ bool Compte::debiter (unsigned int val) {
 	return doit;
 }
 int Compte::getSolde() const  {
-	unique_lock<recursive_mutex> g(m);
-	return solde;
+    lock_guard<std::recursive_mutex> lockGuard(m);
+    return solde;
 }
 recursive_mutex &Compte::getMutex() {
     return this->m;
@@ -30,4 +30,10 @@ Compte::Compte(const Compte & other) {
 	other.m.unlock();
 }
 
+void Compte::lock() const {
+    m.lock();
+}
+void Compte::unlock() const {
+    m.unlock();
+}
 }

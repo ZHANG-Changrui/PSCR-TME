@@ -14,6 +14,8 @@ public :
 	bool debiter (unsigned int val) ;
 	int getSolde() const  ;
     std::recursive_mutex & getMutex();
+    void lock() const;
+    void unlock() const;
 };
 
 }
