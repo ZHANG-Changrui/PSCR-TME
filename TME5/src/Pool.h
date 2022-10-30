@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POOL_H
+#define POOL_H
 
 #include "Queue.h"
 #include "Job.h"
@@ -6,16 +7,19 @@
 #include <thread>
 
 namespace pr {
+    class Pool {
+        Queue<Job> queue;
+        std::vector <std::thread> threads;
+    public:
+        Pool(int qsize);
 
-class Pool {
-	Queue<Job> queue;
-	std::vector<std::thread> threads;
-public:
-	Pool(int qsize) ;
-	void start (int nbthread);
-	void submit (Job * job) ;
-	void stop() ;
-	~Pool() ;
-};
+        void start(int nbthread);
 
+        void submit(Job *job);
+
+        void stop();
+
+        ~Pool();
+    };
 }
+#endif

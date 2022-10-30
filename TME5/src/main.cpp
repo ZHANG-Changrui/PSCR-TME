@@ -6,6 +6,8 @@
 #include <fstream>
 #include <limits>
 #include <random>
+#include "Pool.cpp"
+#include <iostream>
 
 using namespace std;
 using namespace pr;
@@ -101,7 +103,19 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 // NB : en francais pour le cours, preferez coder en english toujours.
 // pas d'accents pour eviter les soucis d'encodage
 
+class testJob:public Job{
+public:
+    int n;
+    testJob(int t):n(t){};
+    void run(){
+        cout<<"tesJob reussi: "<<n<<endl;
+    }
+};
+
 int main () {
+    pr::Pool p(3);
+
+    //p.start(100);
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
@@ -110,7 +124,7 @@ int main () {
 	Scene scene (1000,1000);
 	// remplir avec un peu d'aléatoire
 	fillScene(scene, re);
-	
+
 	// lumieres 
 	vector<Vec3D> lights;
 	lights.reserve(3);
