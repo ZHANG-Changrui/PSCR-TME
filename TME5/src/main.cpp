@@ -102,53 +102,6 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 
 // NB : en francais pour le cours, preferez coder en english toujours.
 // pas d'accents pour eviter les soucis d'encodage
-
-class testJob:public Job{
-public:
-    int n;
-    testJob(int t):n(t){};
-    void run(){
-        cout<<"tesJob reussi: "<<n<<endl;
-    }
-};
-
-
-class PixelJob : public Job {
-
-    void run() {
-        // le point de l'ecran par lequel passe ce rayon
-        auto &screenPoint = screen[y][x];
-        // le rayon a inspecter
-        Rayon ray(scene.getCameraPos(), screenPoint);
-
-        int targetSphere = findClosestInter(scene, ray);
-
-        if (targetSphere == -1) {
-            // keep background color
-        } else {
-            const Sphere &obj = *(scene.begin() + targetSphere);
-            // pixel prend la couleur de l'objet
-            Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
-            // le point de l'image (pixel) dont on vient de calculer la couleur
-            Color &pixel = pixels[y * scene.getHeight() + x];
-            // mettre a jour la couleur du pixel dans l'image finale.
-            pixel = finalcolor;
-        }
-    }
-
-    const Scene::screen_t &screen;
-    Scene &scene;
-    int x;
-    int y;
-    vector<Vec3D> &lights;
-    Color *pixels;
-
-public:
-    PixelJob(const Scene::screen_t &scr, Scene &sce, int x_, int y_, vector<Vec3D> &l, Color *p): screen(scr), scene(sce), x(x_), y(y_), lights(l), pixels(p) {}
-    ~PixelJob() {}
-
-};
-
 class pixelJob:public Job{
     void run () {
         // le point de l'ecran par lequel passe ce rayon
@@ -220,7 +173,7 @@ int main () {
             pixelJob * j=new pixelJob(scene,screen,x,y,lights,pixels);
             p.submit(j);
             //PixelJob *pxl = new PixelJob(screen, scene, x, y, lights, pixels);
-            cout<<"x :"<<x<<" y:"<<y<<endl;
+          //  cout<<"x :"<<x<<" y:"<<y<<endl;
         }
     }
 

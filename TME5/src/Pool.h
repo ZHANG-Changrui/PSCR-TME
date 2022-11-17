@@ -8,7 +8,7 @@
 
 namespace pr {
     void PoolWorker(Queue<pr::Job> &queue){
-        std::cout<<"slol"<<std::endl;
+        //std::cout<<"slol"<<std::endl;
         while(true){
             Job *j=queue.pop();
             if(j== nullptr){
