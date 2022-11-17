@@ -47,6 +47,7 @@ namespace pr {
             tab[begin] = nullptr;
             sz--;
             begin = (begin + 1) % allocsize;
+            cv.notify_all();
             return ret;
         }
         bool push(T* elt) {
@@ -58,6 +59,7 @@ namespace pr {
                 return false;
             }
             tab[(begin + sz) % allocsize] = elt;
+            cv.notify_all();
             sz++;
             return true;
         }
