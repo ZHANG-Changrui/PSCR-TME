@@ -135,13 +135,49 @@ public:
     ~pixelJob() {}
 };
 
+class lineJob:public Job{
+    void run () {
+        for (int  y = 0 ; y < scene.getHeight() ; y++) {
+            // le point de l'ecran par lequel passe ce rayon
+            auto &screenPoint = screen[y][x];
+            // le rayon a inspecter
+            Rayon ray(scene.getCameraPos(), screenPoint);
+
+            int targetSphere = findClosestInter(scene, ray);
+
+            if (targetSphere == -1) {
+                // keep background color
+            } else {
+                const Sphere &obj = *(scene.begin() + targetSphere);
+                // pixel prend la couleur de l'objet
+                Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+                // le point de l'image (pixel) dont on vient de calculer la couleur
+                Color &pixel = pixels[y * scene.getHeight() + x];
+                // mettre a jour la couleur du pixel dans l'image finale.
+                pixel = finalcolor;
+            }
+        }
+    }
+public:
+    Scene &scene;
+    const Scene::screen_t & screen;
+    int x;
+    vector<Vec3D> &lights;
+    Color * pixels;
+    lineJob(Scene& _scene,const Scene::screen_t & _screen,int _x,vector<Vec3D>& _lights,Color * _pixels)
+            :scene(_scene),screen(_screen),x(_x),lights(_lights),pixels(_pixels){}
+    ~lineJob() {}
+};
+
+
+
 int main () {
     //p.start(100);
 
 
 
 
-
+    bool traitementLigne=true;
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
@@ -168,13 +204,18 @@ int main () {
     p.start(100);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-		for (int  y = 0 ; y < scene.getHeight() ; y++) {
             //cout<<"ehm"<<endl;
-            pixelJob * j=new pixelJob(scene,screen,x,y,lights,pixels);
-            p.submit(j);
-            //PixelJob *pxl = new PixelJob(screen, scene, x, y, lights, pixels);
-          //  cout<<"x :"<<x<<" y:"<<y<<endl;
-        }
+            if(traitementLigne){
+                lineJob * j=new lineJob(scene,screen,x,lights,pixels);
+                p.submit(j);
+            }else{
+                for (int  y = 0 ; y < scene.getHeight() ; y++) {
+                    pixelJob * j=new pixelJob(scene,screen,x,y,lights,pixels);
+                    p.submit(j);
+                    //PixelJob *pxl = new PixelJob(screen, scene, x, y, lights, pixels);
+                    //  cout<<"x :"<<x<<" y:"<<y<<endl;
+                }
+            }
     }
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
