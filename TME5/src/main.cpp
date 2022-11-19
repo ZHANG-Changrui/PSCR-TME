@@ -184,7 +184,8 @@ int main () {
 
 	exportImage("toto.ppm",scene.getWidth(), scene.getHeight() , pixels);
     cout<<"lol"<<endl;
-    exit(0);
+    //exit(0);
+    p.stop();
 	return 0;
 }
 

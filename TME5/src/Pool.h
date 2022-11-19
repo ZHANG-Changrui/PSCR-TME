@@ -35,6 +35,9 @@ namespace pr {
         }
         void stop() {
             queue.setBlocking(false);
+            for(auto &i:threads){
+                i.join();
+            }
         }
         ~Pool(){};
     };
