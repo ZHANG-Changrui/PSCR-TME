@@ -26,4 +26,8 @@ Compte::Compte(const Compte & other) {
 	other.m.unlock();
 }
 
+std::mutex& Compte::getMutex() {
+    return m;
+}
+
 }
