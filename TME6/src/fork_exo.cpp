@@ -1,88 +1,63 @@
 #include <iostream>
 #include <unistd.h>
 #include <wait.h>
+#include <signal.h>
+#define REPOS_MAX 1.0
+#define REPOS_MIN 0.3
+
+//probleme, n'arrive pas a entrer dans handler, kill sig tjrs 0?
 using namespace std;
 int vie=3;
-
-void handler(){
-	--vie;
+void repos(){
+    double alea=(double)((rand()%8)+3)/10;
+    sleep(alea);
 }
-void attaque(pid_t adversaire){
-	struct sigaction act;
-	act.sa_handler=handler;
-	sigaction(SIGINT,&act,nullptr);
-	kill(adversaire,SIGINT);
+void handler(int signal){
+	--vie;
+    cout<<getpid()<<" handler! " <<vie<<endl;
+}
+int attaque(pid_t adversaire){
+    //cout<<"attaque!"<<endl;
+	signal(SIGINT,handler);
+    return kill(adversaire,SIGINT);
 }
 void defense(){
-	sigset_t sig;
-	sigemptyset(&sig);
-	sigaddset(&sig,SIGINT);
-
+    cout<<getpid()<<" defense!"<<endl;
+    signal(SIGINT, SIG_IGN);
 }
-void combat(pid_t adversaire){
-	while(1){
-
+int combat(pid_t adversaire){
+	while(vie>0){
+        cout<<getpid()<<": combat vie: "<<vie<<endl;
+        repos();
+        int killsig=attaque(adversaire);
+        cout<<"kill: "<<killsig<<endl;
+        if(killsig==-1){
+            cout<<getpid()<<" a gagné, "<<adversaire<<" a perdu!";
+            return 0;
+        }
+        repos();
+        defense();
 	}
+    cout<<adversaire<<" a gagné, "<<getpid()<<" a perdu!";
+    return 1;
 }
 
 int main () {
 	srand(time(nullptr));
-	/*
-	const int N = 3;
-	std::cout << "main pid=" << getpid() << std::endl;
-	int nbrfils=0;
-	for (int i=1, j=N; i<=N && j==N && fork()==0 ; i++ ) {
-		std::cout << " i:j " << i << ":" << j << std::endl;
-		for (int k=1; k<=i && j==N ; k++) {
-			pid_t pid=fork();	int vie=3;
-	int pid=fork();
-	int sleepTime=(rand()%0.6)+0.3;
-	if(pid==-1){
-		perror("error fork");
-		exit(1);
-	}else if(pid==0){
-		//fils TODO
-		while(vie){
-			defense();
-			sleep(sleepTime);
-		}
-	}else{
-		//Pere TODO
-		while(vie){
-			sleep(sleepTime);
-		}
-	}
-			if ( pid == 0) {
-				nbrfils=0;
-				j=0;
-				std::cout << " k:j " << k << ":" << j << std::endl;
-				cout<<"je suis :"<<getpid()<<endl;
-			}else{
-				nbrfils++;
-				int status;
-				wait(&status);
-				cout<<" je suit "<<getpid()<<" mon fils se termine. fils: "<<pid<<" "<<endl;
-			}
-		}
-	}*/
-
-	int pid=fork();
-	//  double sleepTime=(rand()%0.6)+0.3;
-	if(pid==-1){
-		perror("error fork");
-		exit(1);
-	}else if(pid==0){
-		//fils TODO
-		while(vie){
-			combat(getppid());
-		}
-	}else{
-		//Pere TODO
-		while(vie){
-			combat(pid);
-		}
-	}
-
-
-	return 0;
+    pid_t vador=getpid();
+    pid_t luke=fork();
+    signal(SIGINT,SIG_IGN);
+    if(luke==-1){
+        perror("luke");
+        exit(1);
+    }else if(luke==0){
+        cout<<"luke"<<endl;
+        int val=combat(vador);
+        exit(val);
+    }else{
+        cout<<"vador: "<<vador<<"luke: "<<luke<<endl;
+        int val= combat(luke);
+        //wait(nullptr);
+        exit(val);
+    }
 }
