@@ -3,6 +3,7 @@
 #include <wait.h>
 using namespace std;
 int vie=3;
+
 void handler(){
 	--vie;
 }
@@ -66,7 +67,7 @@ int main () {
 	}*/
 
 	int pid=fork();
-	int sleepTime=(rand()%0.6)+0.3;
+	//  double sleepTime=(rand()%0.6)+0.3;
 	if(pid==-1){
 		perror("error fork");
 		exit(1);
