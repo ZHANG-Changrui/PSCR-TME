@@ -13,8 +13,9 @@ int main () {
      */
     const int N = 3;
     std::cout << "main pid=" << getpid() << std::endl;
+    int fils=0;
     for (int i=1, j=N; i<=N && j==N && fork()==0 ; i++ ) {
-        int fils=0;
+
         std::cout << " i:j " << i << ":" << j << std::endl;
         for (int k=1; k<=i && j==N ; k++) {
             if ( fork() == 0) {
@@ -24,11 +25,10 @@ int main () {
                 ++fils;
             }
         }
-        for(int j=0;j<fils;j++){
-            wait(nullptr);
-        }
         //std::cout<<"nbr fils:"<<fils<<std::endl;
     }
-    wait(nullptr);
+    for(int j=0;j<fils;j++){
+        wait(nullptr);
+    }
     return 0;
 }

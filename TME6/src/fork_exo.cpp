@@ -5,7 +5,7 @@
 #define REPOS_MAX 1.0
 #define REPOS_MIN 0.3
 
-//probleme, n'arrive pas a entrer dans handler, kill sig tjrs 0?
+//probleme, n'arrive pas a entrer dans handler, kill sig tjrs 0?   se combattre est correct, finalisation mal.
 using namespace std;
 int vie=3;
 void repos(){
@@ -28,20 +28,19 @@ void defense(){
 int combat(pid_t adversaire){
 	while(vie>0){
         cout<<getpid()<<": combat vie: "<<vie<<endl;
-        repos();
         int killsig=attaque(adversaire);
-        cout<<"kill: "<<killsig<<endl;
+        cout<<"kill: "<<killsig<<" errno"<<errno<<endl;
         if(killsig==-1){
             cout<<getpid()<<" a gagné, "<<adversaire<<" a perdu!";
             return 0;
         }
         repos();
         defense();
+        repos();
 	}
     cout<<adversaire<<" a gagné, "<<getpid()<<" a perdu!";
     return 1;
 }
-
 int main () {
 	srand(time(nullptr));
     pid_t vador=getpid();
