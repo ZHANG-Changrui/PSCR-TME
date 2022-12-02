@@ -17,21 +17,23 @@ void poolWorker(Queue<Job> &queue){
 	}
 }
 class Pool {
-	Queue<Job> queue;
+	Queue<Job> *queue;
 	std::vector<std::thread> threads;
 public:
-	Pool(int qsize);
+	Pool(int qsize){
+        queue= new Queue<Job>(qsize);
+    }
 
 	void start (int nbthread){
 		for(int i=0;i<nbthread;i++){
-			threads.emplace_back(poolWorker,std::ref(queue));
+			threads.emplace_back(poolWorker,std::ref(*queue));
 		}
 	}
 	void submit (Job * job){
-		queue.push(job);
+		queue->push(job);
 	}
 	void stop(){
-		queue.setBlocking(false);
+		queue->setBlocking(false);
 	}
 
 	~Pool();
