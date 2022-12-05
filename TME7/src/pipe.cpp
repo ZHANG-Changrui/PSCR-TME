@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <wait.h>
 #define COMMANDSIZE 10
+#define BUFFERSIZE 9000
 using namespace std;
 int main(int argc,char ** argv){
     //iterer argv pour trouver les 2 commandes à executer
@@ -13,6 +15,7 @@ int main(int argc,char ** argv){
     char *command2[COMMANDSIZE];
     int i=1;
     int pos=0;
+
     for(i;i<argc;i++){
         if(strcmp(argv[i],"|")==0){
             i++;
@@ -27,21 +30,32 @@ int main(int argc,char ** argv){
         command2[pos]=argv[i];
         pos++;
     }
-    command2[pos]= nullptr;
 
-
-    int output=dup(STDOUT_FILENO);
     int p[2];
     if (pipe(p) < 0)
         perror("error");
 
-    cout<<"lol1"<<endl;
-    dup2(p[1],STDOUT_FILENO);
-    //char buffer[100];
-    execv("/bin/ls",command1);
-    //read(p[0],buffer,12);
-    dup2(output,STDOUT_FILENO);
-    //cout<<"lol"<<endl;
-    cout<<"lol ca marche pas"<<endl;
-    cout<<"afteer"<<endl;
+    int pid=fork();
+    if(pid==-1){
+        perror("fork");
+    }else if(pid==0){
+        close(p[0]);
+        dup2(p[1],1);
+        execv(command1[0],command1);
+    }else{
+
+        close(p[1]);
+        char buffer[BUFFERSIZE];
+        int sz=read(p[0],buffer,BUFFERSIZE);
+        int fd=open("tmp.txt",O_CREAT|O_TRUNC|O_RDWR,0600);
+
+        write(fd,buffer,sz);
+
+        command2[pos]= (char*)"tmp.txt";
+        command2[pos+1]= (char*)nullptr;
+        execv(command2[0],command2);
+        wait(nullptr);
+        //cout<<buffer<<endl;
+    }
+
 }
