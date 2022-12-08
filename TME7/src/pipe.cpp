@@ -30,7 +30,7 @@ int main(int argc,char ** argv){
         command2[pos]=argv[i];
         pos++;
     }
-
+    command2[pos]=(char*)0;
     int p[2];
     if (pipe(p) < 0)
         perror("error");
@@ -42,8 +42,9 @@ int main(int argc,char ** argv){
         close(p[0]);
         dup2(p[1],1);
         execv(command1[0],command1);
-    }else{
 
+    }else{
+    /*
         close(p[1]);
         char buffer[BUFFERSIZE];
         int sz=read(p[0],buffer,BUFFERSIZE);
@@ -55,7 +56,11 @@ int main(int argc,char ** argv){
         command2[pos+1]= (char*)nullptr;
         execv(command2[0],command2);
         wait(nullptr);
-        //cout<<buffer<<endl;
+        */
+        close(p[1]);
+        dup2(p[0],0);
+        close(p[0]);
+        execv(command2[0],command2);
     }
 
 }
