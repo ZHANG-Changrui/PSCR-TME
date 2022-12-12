@@ -27,7 +27,6 @@ void fillScene(Scene & scene, default_random_engine & re) {
 	// quelques spheres de plus pour ajouter du gout a la scene
 	scene.add(Sphere({50,50,40},15.0,Color::red));
 	scene.add(Sphere({100,20,50},55.0,Color::blue));
-
 }
 
 // return the index of the closest object in the scene that intersects "ray"
