@@ -3,7 +3,6 @@
 #include <unistd.h>
 void pr::ConnectionHandler::handleConnection(pr::Socket sc) {
     int fd = sc.getFD();
-
     ssize_t msz = sizeof(int);
     while (1) {
         int lu;

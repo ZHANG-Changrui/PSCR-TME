@@ -8,6 +8,7 @@ namespace pr {
 // une interface pour gerer la communication
 class ConnectionHandler {
 public:
+
 	// gerer une conversation sur une socket
 	virtual void handleConnection(Socket s) = 0;
 	// une copie identique
