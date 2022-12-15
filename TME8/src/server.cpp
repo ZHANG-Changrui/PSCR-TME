@@ -1,26 +1,8 @@
-#include "ServerSocket.h"
+
 #include <iostream>
 #include <unistd.h>
-
-int main00() {
-	pr::ServerSocket ss(1664);
-
-	while (1) {
-		pr::Socket sc = ss.accept();
-
-		int fd = sc.getFD();
-
-		int lu;
-		read(fd, &lu, sizeof(int));
-		std::cout << "lu =" << lu << std::endl;
-		lu++;
-		write(fd, &lu, sizeof(int));
-		sc.close();
-	}
-	ss.close();
-	return 0;
-}
-
+#include "ServerSocket.cpp"
+#include "Socket.cpp"
 int main() {
 	pr::ServerSocket ss(1664);
 

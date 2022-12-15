@@ -1,10 +1,13 @@
 #ifndef SRC_SOCKET_H_
 #define SRC_SOCKET_H_
-
+#include <iostream>
 #include <netinet/ip.h>
 #include <string>
 #include <iosfwd>
-
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/types.h> /* Voir NOTES */
+#include <sys/socket.h>
 namespace pr {
 
 class Socket {
@@ -24,7 +27,6 @@ public :
 	void close();
 };
 
-std::ostream & operator<< (std::ostream & os, struct sockaddr_in * addr);
 
 }
 
