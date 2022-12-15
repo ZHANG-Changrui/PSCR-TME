@@ -9,7 +9,7 @@ using namespace pr;
 
 int main(){
     TCPServer tcp;
-    tcp.startServer(122);
+    tcp.startServer(1664);
 }
 void pr::TCPServer::startServer(int port) {
         ss=new ServerSocket(port);

@@ -10,10 +10,13 @@ namespace pr {
 
 // un serveur TCP, la gestion des connections est déléguée
     void handlerClient(Socket sc){//discution client
-        int N;
-        read(sc.getFD(),&N,sizeof(N));
-        ++N;
-        write(sc.getFD(),&N,sizeof(N));
+        int fd = sc.getFD();
+
+        int lu;
+        read(fd, &lu, sizeof(int));
+        std::cout << "lu =" << lu << std::endl;
+        lu++;
+        write(fd, &lu, sizeof(int));
         sc.close();
     }
     class TCPServer{
