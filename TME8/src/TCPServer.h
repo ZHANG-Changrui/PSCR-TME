@@ -1,26 +1,39 @@
 #ifndef SRC_TCPSERVER_H_
 #define SRC_TCPSERVER_H_
-
+#include <unistd.h>
 #include <thread>
 #include "ServerSocket.h"
 #include "ConnectionHandler.h"
-
+#include <thread>
+#include <vector>
 namespace pr {
 
 // un serveur TCP, la gestion des connections est déléguée
-class TCPServer {
-	ServerSocket * ss; // la socket d'attente si elle est instanciee
-	ConnectionHandler * handler; // le gestionnaire de session passe a la constru
-	// a completer
-public :
-	TCPServer(ConnectionHandler * handler): ss(nullptr),handler(handler) {}
-	// Tente de creer une socket d'attente sur le port donné
-	bool startServer (int port);
+    void handlerClient(Socket sc){//discution client
+        int fd = sc.getFD();
 
-	// stoppe le serveur
-	void stopServer () ;
-};
-
-} // ns pr
+        int lu;
+        read(fd, &lu, sizeof(int));
+        std::cout << "lu =" << lu << std::endl;
+        lu++;
+        write(fd, &lu, sizeof(int));
+        sc.close();
+    }
+    class TCPServer{
+        ServerSocket *ss;
+        std::vector<std::thread> threads;
+        //ConnectionHandler *handler;
+        //std::thread* waitThread;
+    public:
+        void startServer(int port);
+        void stopServer();
+        ~TCPServer(){
+            delete ss;
+            for(auto &i:threads){
+                i.join();
+            }
+        }
+    };
+}
 
 #endif /* SRC_TCPSERVER_H_ */
