@@ -24,7 +24,9 @@ void diffusion(){
             ftruncate(fd,CONTENTSZ);
             void *mem=mmap(0,CONTENTSZ,PROT_WRITE|PROT_READ,MAP_SHARED,fd,0);
             char* content= new(mem) char();
+            //char* content=(char*)mem;
             strcpy(content,msg->content);
+
             munmap(mem,CONTENTSZ);
             close(fd);
             sem_t *client_sem= sem_open(clients[i],O_RDWR,0600,0);

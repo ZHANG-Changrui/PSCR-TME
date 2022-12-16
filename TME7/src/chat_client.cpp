@@ -105,7 +105,7 @@ int main(int argc,char**argv){
     ftruncate(fd,msz);
     void * memoir=mmap(0,msz,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
     msg=new(memoir)struct message;//msg dans une mémoire partagée
-
+    //msg=(struct message*)mempor;
     //sem
     sem= sem_open(server_ID,O_RDWR,0600,0);
     //sem_post(sem);//TODO
