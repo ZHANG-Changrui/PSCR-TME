@@ -36,7 +36,6 @@ void diffusion(){
     }
 }
 int main(int argc,char** argv){
-
     sem_init(&mutex,-1,1);
     const char* server_ID=(argv[1]==0)?DEFAULTSERVER:argv[1];
     int msz=sizeof(struct message);
